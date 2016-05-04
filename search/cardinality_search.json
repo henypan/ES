@@ -1,0 +1,6 @@
+{
+    "query": {"match_all": {}},
+    "aggs": {
+        "uni_thread_count": {"cardinality": {"field": "thread_id"}}
+    }
+}
