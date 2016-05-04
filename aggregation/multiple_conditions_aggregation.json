@@ -1,0 +1,41 @@
+{
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "completed onboarding": "Y"
+          }
+        },
+        {
+          "match": {
+            "monthly billing": "Y"
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "Company": {
+      "terms": {
+        "field": "Company",
+        "size": 1000,
+        "order": {
+          "_count": "desc"
+        }
+      },
+      "aggs": {
+        "credit_card": {
+          "terms": {
+            "field": "credit card provided",
+            "size": 1000,
+            "order": {
+              "_count": "desc"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "completed onboarding": "N"
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "Company": {
+      "terms": {
+        "field": "Company",
+        "size": 1000,
+        "order": {
+          "_count": "desc"
+        }
+      },
+      "aggs": {
+        "user": {
+          "terms": {
+            "field": "UserID",
+            "size": 9,
+            "order": {
+              "_count": "desc"
+            }
+          }
+        }
+      }
+    }
+  }
+}

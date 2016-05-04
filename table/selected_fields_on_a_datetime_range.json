@@ -1,0 +1,31 @@
+{
+  "size": 100,
+  "fields": [
+    "ShortCode",
+    "status",
+    "phone",
+    "email",
+    "UserID",
+    "Term_In_Month",
+    "payment method"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "Company": "TELESCOPE"
+          }
+        },
+        {
+          "range": {
+            "submission_date": {
+              "from": "2016-01-15",
+              "to": "2016-01-16"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "completed onboarding": "Y"
+          }
+        },
+        {
+          "range": {
+            "expiration date": {
+              "from": "2016-03-23",
+              "to": "2016-03-29"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "Company": {
+      "terms": {
+        "field": "Company",
+        "size": 1000,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+}
