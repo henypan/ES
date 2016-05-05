@@ -1,0 +1,58 @@
+{
+  "size": 0,
+  "query": {"match": {
+    "port_type": "P"
+  }},
+  "aggs": {
+    "monthly_status": {
+      "date_histogram": {
+        "field": "create_time",
+        "interval": "1M"
+      },
+      "aggs": {
+        "donor": {
+          "terms": {
+            "field": "donor_mno_id",
+            "size": 1000,
+            "order": {
+              "_count": "desc"
+            }
+          },
+        "aggs": {
+          "recipient": {
+            "terms": {
+              "field": "recipient_mno_id",
+              "size": 1000,
+              "order": {
+                "_count": "desc"
+              }
+            },
+            "aggs": {
+              "service_type": {
+                "terms": {
+                  "field": "service_type",
+                  "size": 1000,
+                  "order": {
+                    "_count": "desc"
+                  }
+                },
+              "aggs": {
+                "reject_code": {
+                  "terms": {
+                    "field": "reject_code",
+                    "size": 1000,
+                    "order": {
+                      "_count": "desc"
+                    }
+                  }
+                }
+              }
+             }
+            }
+          }
+        }
+       }
+      }
+    }
+  }
+}

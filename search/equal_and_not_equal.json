@@ -1,0 +1,20 @@
+{
+  "_source": [
+    "completed onboarding",
+    "monthly billing"
+  ],
+  "query": {
+    "bool": {
+      "must": {
+        "term": {
+          "completed onboarding": "Y"
+        }
+      },
+      "must_not": {
+        "term": {
+          "monthly billing": "Y"
+        }
+      }
+    }
+  }
+}
