@@ -1,0 +1,213 @@
+1. Search state == success
+GET /demo_cclrollup20150824/logs/_search
+{
+    "query": {
+        "filtered": {
+           "query": {"match_all": {}},
+           "filter": {"term": {
+              "state": "success"
+           }}
+        }
+    }
+}
+
+2. Ordered by flowStartTime
+GET /demo_cclrollup20150824/logs/_search
+{
+    "query": {"match_all": {}},
+    "sort": [
+       {
+          "flowStartTime": {
+             "order": "asc"
+          }
+       }
+    ]
+}
+
+3. Match on multiple conditions, rendering back specified source fields
+GET /demo_cclrollup20150824/logs/_search
+{
+    "_source": ["thread_id", "flowStartTime"],
+    "query": {
+        "bool": {
+            "must": [
+               {"match": {
+                  "short_code": "10002"
+               }},
+               {"match": {
+                  "currentState": "MT1 Success"
+               }
+               }
+            ]
+        }
+    }
+}
+
+4. Get thread_id in a date range
+GET /demo_cclrollup_last30days/logs/_search
+{
+    "_source":["thread_id", "flowStartTime"],
+    "query": {
+        "range": {
+           "flowStartTime": {
+              "from": "2015-08-20",
+              "to": "2015-08-23"
+           }
+        }
+    }
+}
+
+better performance
+GET /demo_cclrollup_last30days/logs/_search
+{
+    "_source":["thread_id", "flowStartTime"],
+    "query": {
+        "filtered": {
+           "query": {"match_all": {}},
+           "filter": {
+               "range": {
+                  "flowStartTime": {
+                     "from": "2015-08-20",
+                     "to": "2015-08-23"
+                  }
+               }
+           }
+        }
+    }
+}
+
+
+5. Get the popularity of each short_code
+GET /demo_cclrollup_last30days/logs/_search?search_type=count
+{
+    "query": {"match_all": {}},
+    "aggs": {
+        "popular_shortcodes": {
+            "terms" : {
+                "field": "short_code"
+            }
+        }
+    }
+}
+
+6. Aggregation with order
+GET /demo_cclrollup_last30days/logs/_search?search_type=count
+{
+    "query": {"match_all": {}},
+    "aggs": {
+        "popular_states": {
+            "terms" : {
+                "field": "currentState",
+                "order": {
+                    "_count": "asc"
+                }
+            }
+        }
+    }
+}
+
+7. Assign buckets based on flowDuration
+POST /demo_cclrollup_last30days/logs/_search?search_type=count
+{
+    "query": { "match_all": {}},
+    "aggs": {
+        "duration_range": {
+            "range": {
+                "field": "flowDuration",
+                "ranges": [
+                    {"key": "1", "to": 10},
+                    {"key": "2", "from": 10, "to": 30},
+                    {"key": "3", "from": 30, "to": 60},
+                    {"key": "4", "from": 60, "to": 180},
+                    {"key": "5", "from": 180, "to": 300},
+                    {"key": "6", "from": 300}
+                ]
+            }
+        }
+    }
+}
+
+8. FlowDuration Aggregation based on flowType
+POST /demo_cclrollup_last30days/logs/_search?search_type=count
+{
+    "query": {"match_all": {}},
+    "aggs": {
+        "MT_vs_MO": {
+            "filters": {
+                "filters": {
+                    "MT": {"term": {"flowType": "MT"}},
+                    "MO": {"term": {"flowType": "MO"}}
+                }
+            },
+            "aggs": {
+                "ave_duration": {
+                    "avg" : {"field": "flowDuration"}
+                }
+            }
+        }
+    }
+}
+
+9. Get a count of unique values (thread_id)
+POST /demo_cclrollup_last30days/logs/_search?search_type=count
+{
+    "query": {"match_all": {}},
+    "aggs": {
+        "uni_thread_count": {"cardinality": {"field": "thread_id"}}
+    }
+}
+
+now page323
+
+
+GET /npc_rollup*/logs/_search
+{
+    "_source":["port_id", "request_date"],
+    "query": {
+        "filtered": {
+           "query": {"match_all": {}},
+           "filter": {
+               "range": {
+                  "request_date": {
+                     "from": "2014-09-18T21:00:00",
+                     "to": "2014-09-18T21:30:22"
+                  }
+               }
+           }
+        }
+    }
+}
+
+10. Filtered by some field from data in a time range
+GET /st_report_last30days/logs/_search
+{
+  "size": 100,
+  "fields": [
+    "ShortCode",
+    "status",
+    "phone",
+    "email",
+    "UserID",
+    "Term_In_Month",
+    "payment method"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "Company": "TELESCOPE"
+          }
+        },
+        {
+          "range": {
+            "submission_date": {
+              "from": "2016-01-15",
+              "to": "2016-01-16"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
